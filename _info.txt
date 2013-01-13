@@ -4,9 +4,13 @@
 #compile
 make olinux
 
-#run
+#run (test)
+./DGlml --test -O true
 echo '12.3 32.1 3.21 234' | ./DGlml -d 0    2> /dev/null
 echo '12.3 32.1 3.21 234' | ./DGlml -d 1    2> /dev/null
 echo '12.3 32.1 3.21 234' | ./DGlml -d +0.5 2> /dev/null
 echo '12.3 32.1 3.21 234' | ./DGlml -d -0.5 2> /dev/null
+
+#run (advanced)
+../PGlml/PGlml -o particle_parameters.cimg && ./DGlml -i particle_parameters.cimg -d -0.5 -o particle_exposure1.cimg &&  ./DGlml -i particle_parameters.cimg -d +0.5 -o particle_exposure2.cimg
 

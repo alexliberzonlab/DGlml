@@ -278,9 +278,22 @@ template<typename T,typename mapT> int displacement_map(CImg<T> &particles,mapT 
 
 int main(int argc,char **argv)
 {
-  // Usage of the program displayed at the command line
-  cimg_usage("particle Displacement Generator of LML");
-  const bool help = cimg_option("-h",false,"Display Help");
+//commmand line options
+ ///usage
+  cimg_usage(std::string("particle Displacement Generator of LML, \
+it uses different GNU libraries (see --info option)\n\n \
+usage: ./DGlml -h -I #help and compilation information\n \
+       ./DGlml --test -O true #just check: random gaussian particle parameters\n \
+         PGlml -o particle.cimg #generate particle parameters using PGlml of SIGlml program suite\n \
+       ./DGlml -i particle.cimg -d -0.5 -o particle_exposure1.cimg -O true #exposure 1 position rendering and show position image\n \
+       ./DGlml -i particle.cimg -d +0.5 -o particle_exposure2.cimg -O true #exposure 2 position rendering and show position image\n \
+version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_format."+std::string(PG_FORMAT_VERSION)+")\n compilation date: " \
+            ).c_str());//cimg_usage
+  ///information and help
+  const bool show_h   =cimg_option("-h",    false,NULL);//-h hidden option
+        bool show_help=cimg_option("--help",show_h,"help (or -h option)");show_help=show_h|show_help;//same --help or -h option
+  bool show_info=cimg_option("-I",false,NULL);//-I hidden option
+  if( cimg_option("--info",show_info,"show compilation options (or -I option)") ) {show_info=true;cimg_library::cimg::info();}//same --info or -I option  // Usage of the program displayed at the command line
 //tests
   cimg_help("\nTest options");
   const bool test = cimg_option("--test",false,"Run and show displacement test (add -O option to see resulting image).");
@@ -307,9 +320,9 @@ int main(int argc,char **argv)
   const int option_image_particle_radius=cimg_option("-r",3,"particle radius of position image");
   const char* option_image_filename=cimg_option("-P","false","file name to output positions in an image (e.g. -P positions.png)");
   const bool option_image_file=cimg::strcmp(option_image_filename,"false");
+  ///stop if help requested
+  if(show_help) {/*print_help(std::cerr);*/return 0;}
 
-  if(help) return 0;
-  
 //get particle parameters (input)
 ///create parameter array
   CImg<float> particles;
