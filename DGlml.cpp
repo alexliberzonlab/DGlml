@@ -136,7 +136,7 @@ template<typename T> int create_random_parameters(CImg<T> &particles/*gaussian p
     particles(i,0,0,POS_Y)=coord_y(i);
   }
   return 0;
-}
+}//create_random_parameters
 
 //read particle parameters from stdin
 /* get gaussian particle parameters from stdin
@@ -174,7 +174,7 @@ template<typename T> int get_particles(int &n,CImg<T> &particles)
   particles.draw_image(0,0,0,2,psigma);
   particles.draw_image(0,0,0,3,color);
   return 0;
-}
+}//get_particles
 
 //! draw particle position within the image
 /* create single pixel particles within the image to show position only.
@@ -197,7 +197,7 @@ template<typename imageT, typename T> int draw_particle_position(CImg<imageT> &i
     if( (x>-radius) && x<image.dimx()+radius && (y>-radius) && y<image.dimy()+radius ) image.draw_circle(x,y,radius,&color);
   }
   return 0;
-}
+}//draw_particle_position
 
 
 
@@ -225,7 +225,7 @@ template<typename T> int displacement_translation(CImg<T> &particles,T displacem
     particles(p,0,0,POS_Y)+=dy;
   }
   return 0;
-}
+}//displacement_translation
 
 //! create a displacement map using plasma function
 /* Creation of a displacement map from a 3 components plasma function (i.e. looks like a turbulent flow, but no fluid mechanics law in it).
@@ -249,7 +249,7 @@ template<typename T> int create_plasma(CImg<T> &plasma,int dimx,int dimy,T veloc
     plasma.display("fake turbulence velocity (plasma) only DGlml");
 #endif
   return 0;
-}
+}//create_plasma
 
 //! displace particle using a displacement map
 /* Each particle is displaced by the amount of the nearest pixel of the displacement map.
@@ -274,7 +274,7 @@ template<typename T,typename mapT> int displacement_map(CImg<T> &particles,mapT 
     particles(p,0,0,POS_Y)+=map((int)x,(int)y,0,VEL_Y)*displacement_type;
   }
   return 0;
-}
+}//displacement_map
 
 int main(int argc,char **argv)
 {
@@ -286,10 +286,7 @@ int main(int argc,char **argv)
   const bool test = cimg_option("--test",false,"Run and show displacement test (add -O option to see resulting image).");
 //displacement
   cimg_help("\nDisplacement options");
-  float displacement_type= cimg_option("-d",0,"displacement: 0 none, 1 double exposure, +/-0.5 single exposure 1/2.");
-  
-printf("\n coucou displacement_type %f \n",displacement_type);
-
+  float displacement_type= cimg_option("-d",0.0,"displacement: 0 none, 1 double exposure, +/-0.5 single exposure 1/2.");
   const char* displacement_function=cimg_option("--function","translation","displacement function: translation or plasma.");
   float displacement_constant_x= cimg_option("--dx",12.345,"constant displacement value along x axis or along any direction.");
   float displacement_constant_y= cimg_option("--dy",12.345,"constant displacement value along y axis or structure size.");
@@ -390,5 +387,5 @@ printf("\n coucou displacement_type %f \n",displacement_type);
 #endif
   }
  return 0;
-}
+}//main
 

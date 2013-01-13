@@ -1,0 +1,12 @@
+#DGlml
+##particle Displacement Generator of the Laboratory of Mechanics in Lille (LML)
+
+#compile
+make olinux
+
+#run
+echo '12.3 32.1 3.21 234' | ./DGlml -d 0    2> /dev/null
+echo '12.3 32.1 3.21 234' | ./DGlml -d 1    2> /dev/null
+echo '12.3 32.1 3.21 234' | ./DGlml -d +0.5 2> /dev/null
+echo '12.3 32.1 3.21 234' | ./DGlml -d -0.5 2> /dev/null
+
