@@ -1,0 +1,61 @@
+particle Displacement Generator of the Laboratory of Mechanics in Lille (LML) -part of SIGlml suite-
+
+DGlml is part of Particle Image Velocimetry image generation for
+particle Displacement Generation (i.e. move particle position).
+Presently, particle position is changed regarding to displacement in image space (i.e. 2D).
+It is intended to test 2D2C PIV codes.
+For 3D space, see PIVnet SIG at www.meol.cnrs.fr SIG .
+
+SIGlml program suite: PGlml | DGlml | SIGlml
+- PGlml
+- DGlml
+- SIGlml
+
+ex.:
+#PIV generation
+PGlml -o particles.cimg
+##single exposure generation
+DGlml -i particles.cimg -d -0.5 -o particles_1.cimg
+DGlml -i particles.cimg -d +0.5 -o particles_2.cimg
+##double exposure generation
+DGlml -i particles.cimg -d 1 -o particles_1n2.cimg
+##single exposure images
+SIGlml -i particles_1.cimg -o particles_1.png
+SIGlml -i particles_2.cimg -o particles_2.png
+##double exposure image
+SIGlml -i particles_1n2.cimg -o particles_1n2.png
+
+
+ DGlml : particle Displacement Generator of LML, it uses different GNU libraries (see --info option)
+
+ usage: ./DGlml -h -I #help and compilation information
+        ./DGlml --test -O true #just check: random gaussian particle parameters
+        ./DGlml -i particle.cimg -d -0.5 -o particle_exposure1.cimg -O true #exposure 1 position rendering and show position image
+        ./DGlml -i particle.cimg -d +0.5 -o particle_exposure2.cimg -O true #exposure 2 position rendering and show position image
+ version: v0.0.1	(other library versions: DGlml_parameter_format.v0.0.1:xySB)
+ compilation date:  (Jan 13 2013, 21:21:58)
+
+    --help           true                     help (or -h option)
+    --info           false                    show compilation options (or -I option)
+
+Test options
+    --test           false                    Run and show displacement test (add -O option to see resulting image).
+
+Displacement options
+    -d               0                        displacement: 0 none, 1 double exposure, +/-0.5 single exposure 1/2.
+    --function       translation              displacement function: translation or plasma.
+    --dx             12.345                   constant displacement value along x axis or along any direction.
+    --dy             12.345                   constant displacement value along y axis or structure size.
+
+Particle options
+    -i               stdin                    particle parameters source cimg file or can be set to stdin (external) (e.g. echo 31.234 12.345 1.5 255 | ./DGlml -i stdin)
+    -o               stdout                   particle parameters destination cimg file or can be set to stdout (external) (e.g. echo 32 16 2.3 200 | ./DGlml --function translation -d 0.5 --dx 12.345 --dy 1.234 -i stdin -o stdout)
+    -n               -1                       to limit the number of particles
+
+Particle position image options
+    -W               512                      image width
+    -H               512                      image height
+    -O               false                    display position image
+    -r               3                        particle radius of position image
+    -P               false                    file name to output positions in an image (e.g. -P positions.png)
+

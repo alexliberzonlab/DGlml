@@ -4,6 +4,9 @@
 #compile
 make olinux
 
+#run
+./DGlml -I -h
+
 #run (test)
 ./DGlml --test -O true
 echo '12.3 32.1 3.21 234' | ./DGlml -d 0    2> /dev/null
