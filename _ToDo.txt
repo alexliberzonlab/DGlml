@@ -1,6 +1,5 @@
-v git (use DGlml.cpp code from 07/05/2009 for initial commit using CImg.v1.3.0)
-v bug: +/-0.5 not working <=> to 0 !?
-v standard usage, -h and -I command line options
-v version
+v velocity map (from file)
+_ cropNstrech velocity map regarding to image size (options: -x/y0/1 vs -W/-H => magnitude i.e. -d +/-0.5*magnitude)
 _ doxygen
+_ NetCDF
 

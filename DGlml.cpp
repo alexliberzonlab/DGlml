@@ -267,7 +267,6 @@ template<typename T,typename mapT> int displacement_map(CImg<T> &particles,mapT 
 #define VEL_Y 1
   if(particles.dimv()<2) return 1;
   if(map.dimv()<2) return 2;
-std::cerr<<"{//displacement_map\n"<<std::flush;
   cimg_forX(particles,p)
   {
     T x=particles(p,0,0,POS_X),y=particles(p,0,0,POS_Y);
@@ -276,7 +275,6 @@ std::cerr<<"{//displacement_map\n"<<std::flush;
     particles(p,0,0,POS_X)+=map((int)x,(int)y,0,VEL_X)*displacement_type;
     particles(p,0,0,POS_Y)+=map((int)x,(int)y,0,VEL_Y)*displacement_type;
   }
-std::cerr<<"}//displacement_map\n"<<std::flush;
   return 0;
 }//displacement_map
 
@@ -390,19 +388,28 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
     {
       CImg<> plasma;
       create_plasma(plasma,option_image_width,option_image_height,-displacement_constant_x,displacement_constant_x,displacement_constant_y);
-plasma.print("map from plasma");
+//plasma.print("map from plasma");
       displacement_map(particles,displacement_type,plasma);
     }
     else
     {//displacement from file
       CImg<> map;
       map.load(option_displacement_filename);
-map.print("map from file");
-      //! \todo . scaling using displacement_type (should differ than 1 (i.e. double exposure), i.e. 1.000001)
-      //! \todo [high] add cropping
-particles.print("particles");
+//map.print("map from file");
+      //! \todo v scaling using displacement_type (should differ than 1 (i.e. double exposure), i.e. 1.000001)
+//! \todo [high] . add cropping (code from PGlml)
+      //crop map if need extraction from a bigger map
+      if(option_displacement_x1==-1) option_displacement_x1=map.width-1;
+      if(option_displacement_y1==-1) option_displacement_y1=map.height-1;
+      map.crop(option_displacement_x0,option_displacement_y0,option_displacement_x1,option_displacement_y1);
+      //resize
+      if(option_image_width<0||option_image_height<0)
+        std::cerr<<"information: map scale is NOT changed.\n";
+      else
+        map.resize(option_image_width,option_image_height);
+      if(option_output_displacement_filename!=NULL) map.save(option_output_displacement_filename);
+
       displacement_map(particles,displacement_type,map);
-particles.print("particles");
     }
   }
 
