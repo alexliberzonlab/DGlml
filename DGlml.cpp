@@ -92,8 +92,8 @@ a> for the whole program
 
 //debug display (0- quiet, 1- only final image, 2- image step by step)
 #define cimg_debug 0
-//#define cimg_debug 1
-//#define cimg_debug 2
+#define cimg_debug 1
+#define cimg_strict_warnings
 #include "../CImg/CImg.h"
 
 using namespace cimg_library;
@@ -266,13 +266,17 @@ template<typename T,typename mapT> int displacement_map(CImg<T> &particles,mapT 
 #define VEL_X 0
 #define VEL_Y 1
   if(particles.dimv()<2) return 1;
-  if(map.dimv()<2) return 1;
+  if(map.dimv()<2) return 2;
+std::cerr<<"{//displacement_map\n"<<std::flush;
   cimg_forX(particles,p)
   {
     T x=particles(p,0,0,POS_X),y=particles(p,0,0,POS_Y);
+//! \todo [low] presently, closest point velocity used, might need bilinear or spline interpolation.
+    if(!(map.containsXYZV(x,y))) continue;
     particles(p,0,0,POS_X)+=map((int)x,(int)y,0,VEL_X)*displacement_type;
     particles(p,0,0,POS_Y)+=map((int)x,(int)y,0,VEL_Y)*displacement_type;
   }
+std::cerr<<"}//displacement_map\n"<<std::flush;
   return 0;
 }//displacement_map
 
@@ -386,18 +390,23 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
     {
       CImg<> plasma;
       create_plasma(plasma,option_image_width,option_image_height,-displacement_constant_x,displacement_constant_x,displacement_constant_y);
+plasma.print("map from plasma");
       displacement_map(particles,displacement_type,plasma);
     }
     else
     {//displacement from file
       CImg<> map;
       map.load(option_displacement_filename);
+map.print("map from file");
       //! \todo . scaling using displacement_type (should differ than 1 (i.e. double exposure), i.e. 1.000001)
       //! \todo [high] add cropping
+particles.print("particles");
       displacement_map(particles,displacement_type,map);
+particles.print("particles");
     }
   }
-//set particle parameters (ouput)
+
+//set particle parameters (output)
   if(!cimg::strcmp("stdout",particleOutputType)) cimg_forX(particles,p) {cimg_forV(particles,v) cout<<particles(p,0,0,v)<<"\t"; cout<<endl;}
   else particles.save(particleOutputType);
 #if cimg_debug>1
