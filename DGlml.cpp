@@ -336,8 +336,6 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
 //get particle parameters (input)
 ///create parameter array
   CImg<float> particles;
-///create displacement (optional)
-  CImg<int> displacement;
 ///create parameters if testing
   if(test)
   {
@@ -360,10 +358,10 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
     if(particles.dimv()<4) {cerr<<"\nerror: needs at least 4 parameters for a gaussian particle (file \""<<particleInputType<<"\" do NOT."<<flush;return 1;}
   }
 //displacement generation
-  if(displacement_type==0) cerr<<"\rinformation: no displacement generated."<<flush;
+  if(displacement_type==0) cerr<<"\rinformation: no displacement generated.\n"<<flush;
   else if(displacement_type==1)
   {
-    cerr<<"\rinformation: double exposure generation."<<flush;
+    cerr<<"\rinformation: double exposure generation.\n"<<flush;
     CImg<float> particles2(particles);
     if (!cimg::strcmp("translation",displacement_function))
     {
@@ -381,8 +379,9 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
   }
   else
   {
-    cerr<<"\rinformation: single exposure generation."<<flush;
+    cerr<<"\rinformation: single exposure generation.\n"<<flush;
     if (!cimg::strcmp("translation",displacement_function)) displacement_translation(particles,displacement_type,displacement_constant_x,displacement_constant_y);
+    else
     if (!cimg::strcmp("plasma",displacement_function))
     {
       CImg<> plasma;
