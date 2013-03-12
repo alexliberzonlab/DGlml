@@ -91,9 +91,9 @@ a> for the whole program
 #include<iostream>
 
 //debug display (0- quiet, 1- only final image, 2- image step by step)
-//#define cimg_debug 0
+#define cimg_debug 0
 //#define cimg_debug 1
-#define cimg_debug 2
+//#define cimg_debug 2
 #include "../CImg/CImg.h"
 
 using namespace cimg_library;
@@ -320,12 +320,24 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
   const int option_image_particle_radius=cimg_option("-r",3,"particle radius of position image");
   const char* option_image_filename=cimg_option("-P","false","file name to output positions in an image (e.g. -P positions.png)");
   const bool option_image_file=cimg::strcmp(option_image_filename,"false");
+  ///displacement image file name (optional input)
+  cimg_help("  ** displacement map options");
+  const char* option_displacement_filename= cimg_option("-m",(char*)NULL,"file name of the particle displacement ( u,v ; e.g. -m displacement.cimg)");
+  const float option_displacement_x0=cimg_option("-x0",0.0,"crop displacement x position top-left (e.g. 123 nodes)");
+  const float option_displacement_y0=cimg_option("-y0",0.0,"crop displacement y position");
+        float option_displacement_x1=cimg_option("-x1",-1.0,"crop displacement x position bottom-right (e.g. 543 nodes)");
+        float option_displacement_y1=cimg_option("-y1",-1.0,"crop displacement y position");
+  cimg_help("  *** misc. displacement options");
+  ///displacement image file name (optional output)
+  const char* option_output_displacement_filename=cimg_option("-M",(char*)NULL,"file name to output displacement image (e.g. -M cropNscale_displacement.cimg)");
   ///stop if help requested
   if(show_help) {/*print_help(std::cerr);*/return 0;}
 
 //get particle parameters (input)
 ///create parameter array
   CImg<float> particles;
+///create displacement (optional)
+  CImg<int> displacement;
 ///create parameters if testing
   if(test)
   {
@@ -376,6 +388,14 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
       CImg<> plasma;
       create_plasma(plasma,option_image_width,option_image_height,-displacement_constant_x,displacement_constant_x,displacement_constant_y);
       displacement_map(particles,displacement_type,plasma);
+    }
+    else
+    {//displacement from file
+      CImg<> map;
+      map.load(option_displacement_filename);
+      //! \todo . scaling using displacement_type (should differ than 1 (i.e. double exposure), i.e. 1.000001)
+      //! \todo [high] add cropping
+      displacement_map(particles,displacement_type,map);
     }
   }
 //set particle parameters (ouput)
