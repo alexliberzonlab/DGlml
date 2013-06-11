@@ -1,5 +1,5 @@
 v velocity map (from file)
-_ cropNstrech velocity map regarding to image size (options: -x/y0/1 vs -W/-H => magnitude i.e. -d +/-0.5*magnitude)
+v cropNstrech velocity map regarding to image size (options: -x/y0/1 vs -W/-H => magnitude i.e. -d +/-0.5*magnitude)
 _ doxygen
 _ NetCDF
 

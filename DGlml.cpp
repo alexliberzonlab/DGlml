@@ -396,8 +396,6 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
       CImg<> map;
       map.load(option_displacement_filename);
 //map.print("map from file");
-      //! \todo v scaling using displacement_type (should differ than 1 (i.e. double exposure), i.e. 1.000001)
-//! \todo [high] . add cropping (code from PGlml)
       //crop map if need extraction from a bigger map
       if(option_displacement_x1==-1) option_displacement_x1=map.width-1;
       if(option_displacement_y1==-1) option_displacement_y1=map.height-1;
@@ -406,7 +404,11 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
       if(option_image_width<0||option_image_height<0)
         std::cerr<<"information: map scale is NOT changed.\n";
       else
-        map.resize(option_image_width,option_image_height);
+      {
+        std::cerr<<"information: map is scaled using linear interpolation.\n";
+        //1 = nearest point, 2 = moving average, 3 = linear, 4 = grid, 5 = bi-cubic interpolations.
+        map.resize(option_image_width,option_image_height,-100,-100, 3);
+      }
       if(option_output_displacement_filename!=NULL) map.save(option_output_displacement_filename);
 
       displacement_map(particles,displacement_type,map);
