@@ -90,10 +90,10 @@ a> for the whole program
 
 #include<iostream>
 
-//debug display (0- quiet, 1- only final image, 2- image step by step)
-//#define cimg_debug 0
-//#define cimg_debug 1
-#define cimg_debug 2
+//debug display (0- quiet, 1- only final image (and only if -O true), 2- image step by step)
+//#define dglml_debug 0
+//#define dglml_debug 1
+#define dglml_debug 2
 #include "../CImg/CImg.h"
 
 using namespace cimg_library;
@@ -245,7 +245,7 @@ template<typename T> int create_plasma(CImg<T> &plasma,int dimx,int dimy,T veloc
   int nb_components=3;
   plasma.assign(dimx,dimy,1,nb_components,0).noise(100).draw_plasma();
   cimg_forV(plasma,k) plasma.get_shared_channel(k).blur((float)(cimg::rand()*structure_size)).normalize(velocity_min,velocity_max);
-#if cimg_debug>1
+#if dglml_debug>1
     plasma.display("fake turbulence velocity (plasma) only DGlml");
 #endif
   return 0;
@@ -381,7 +381,7 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
 //set particle parameters (ouput)
   if(!cimg::strcmp("stdout",particleOutputType)) cimg_forX(particles,p) {cimg_forV(particles,v) cout<<particles(p,0,0,v)<<"\t"; cout<<endl;}
   else particles.save(particleOutputType);
-#if cimg_debug>1
+#if dglml_debug>1
     particles.display("particle parameters DGlml");
 #endif
 
@@ -395,7 +395,7 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
   //save
   ///08bit
     if(option_image_file) image.save(option_image_filename);
-#if cimg_debug>0
+#if dglml_debug>0
     if(option_image) image.display("particle position only DGlml");
 #endif
   }
