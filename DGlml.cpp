@@ -155,8 +155,8 @@ template<typename T> int get_particles(int &n,CImg<T> &particles)
   float x,y,q,w;
   while(cin>>x>>y>>q>>w)
   {
-//cout<<endl<<"("<<x<<","<<y<<")";
-    p++;if(p>n) {cout<<endl<<"information: not enough space in the particle array (i.e. reallocating more space), set -n option to speed up execution (n should be higher than "<<n+1<<")."<<flush;n+=512;coord_x.resize(n);coord_y.resize(n);psigma.resize(n),color.resize(n);n--;}
+//cerr<<endl<<"("<<x<<","<<y<<")";
+    p++;if(p>n) {cerr<<endl<<"information: not enough space in the particle array (i.e. reallocating more space), set -n option to speed up execution (n should be higher than "<<n+1<<").\n"<<flush;n+=512;coord_x.resize(n);coord_y.resize(n);psigma.resize(n),color.resize(n);n--;}
     coord_x(p)=x;
     coord_y(p)=y;
     psigma(p)=q;
@@ -329,29 +329,29 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
 ///create parameters if testing
   if(test)
   {
-    cerr<<"\rinformation: create particles with random positions."<<flush;
+    cerr<<"information: create particles with random positions.\n"<<flush;
     create_random_parameters(particles,(nbParticles==-1)?1234:nbParticles,
                              (float)0,(float)option_image_width-1,(float)0,(float)option_image_height-1);
 ///read from stdin
   }
   else if (!cimg::strcmp("stdin",particleInputType))
   {
-    cerr<<"\rinformation: get particles from stdin (must be 4 parameters: x,y,sigma,level)."<<flush;
+    cerr<<"information: get particles from stdin (must be 4 parameters: x,y,sigma,level).\n"<<flush;
     get_particles(nbParticles,particles);
   }
 ///read from file
   else 
   {
-    cerr<<"\rinformation: get particles from file \""<<particleInputType<<"\"."<<flush;
+    cerr<<"information: get particles from file \""<<particleInputType<<"\".\n"<<flush;
     int error;
     if(!(error=particles.load(particleInputType))) return error;
-    if(particles.dimv()<4) {cerr<<"\nerror: needs at least 4 parameters for a gaussian particle (file \""<<particleInputType<<"\" do NOT."<<flush;return 1;}
+    if(particles.dimv()<4) {cerr<<"error: needs at least 4 parameters for a gaussian particle (file \""<<particleInputType<<"\" do NOT.\n"<<flush;return 1;}
   }
 //displacement generation
-  if(displacement_type==0) cerr<<"\rinformation: no displacement generated."<<flush;
+  if(displacement_type==0) cerr<<"information: no displacement generated.\n"<<flush;
   else if(displacement_type==1)
   {
-    cerr<<"\rinformation: double exposure generation."<<flush;
+    cerr<<"information: double exposure generation.\n"<<flush;
     CImg<float> particles2(particles);
     if (!cimg::strcmp("translation",displacement_function))
     {
@@ -369,7 +369,7 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
   }
   else
   {
-    cerr<<"\rinformation: single exposure generation."<<flush;
+    cerr<<"information: single exposure generation.\n"<<flush;
     if (!cimg::strcmp("translation",displacement_function)) displacement_translation(particles,displacement_type,displacement_constant_x,displacement_constant_y);
     if (!cimg::strcmp("plasma",displacement_function))
     {
