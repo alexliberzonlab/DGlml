@@ -241,7 +241,6 @@ template<typename T> int create_plasma(CImg<T> &plasma,int dimx,int dimy,T veloc
 {
 #define VEL_X 0
 #define VEL_Y 1
-#define VEL_Z 0
   int nb_components=3;
   plasma.assign(dimx,dimy,1,nb_components,0).noise(100).draw_plasma();
   cimg_forV(plasma,k) plasma.get_shared_channel(k).blur((float)(cimg::rand()*structure_size)).normalize(velocity_min,velocity_max);
@@ -303,6 +302,8 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
   const char* displacement_function=cimg_option("--function","translation","displacement function: translation or plasma.");
   float displacement_constant_x= cimg_option("--dx",12.345,"constant displacement value along x axis or along any direction.");
   float displacement_constant_y= cimg_option("--dy",12.345,"constant displacement value along y axis or structure size.");
+  const char* field_file = cimg_option("--export-field","","filename for velocity field export.");
+  int field_resolution = cimg_option("--field-res", 10, "velocity field export resolution, in percents (integer).");
 //particles
   cimg_help("\nParticle options");
   ///particle parameter from stdin
@@ -348,34 +349,73 @@ version: "+std::string(VERSION)+"\t(other library versions: DGlml_parameter_form
     if(particles.dimv()<4) {cerr<<"error: needs at least 4 parameters for a gaussian particle (file \""<<particleInputType<<"\" do NOT.\n"<<flush;return 1;}
   }
 //displacement generation
-  if(displacement_type==0) cerr<<"information: no displacement generated.\n"<<flush;
-  else if(displacement_type==1)
+  if(displacement_type==0)
   {
-    cerr<<"information: double exposure generation.\n"<<flush;
-    CImg<float> particles2(particles);
-    if (!cimg::strcmp("translation",displacement_function))
-    {
-      displacement_translation(particles,-0.5f,displacement_constant_x,displacement_constant_y);
-      displacement_translation(particles2,0.5f,displacement_constant_x,displacement_constant_y);
-    }
-    if (!cimg::strcmp("plasma",displacement_function))
-    {
-      CImg<> plasma;
-      create_plasma(plasma,option_image_width,option_image_height,-displacement_constant_x,displacement_constant_x,displacement_constant_y);
-      displacement_map(particles,-0.5f,plasma);
-      displacement_map(particles2,0.5f,plasma);
-    }
-    particles.append(particles2,'x');
+    cerr<<"information: no displacement generated.\n"<<flush;
   }
   else
   {
-    cerr<<"information: single exposure generation.\n"<<flush;
-    if (!cimg::strcmp("translation",displacement_function)) displacement_translation(particles,displacement_type,displacement_constant_x,displacement_constant_y);
-    if (!cimg::strcmp("plasma",displacement_function))
+    bool transFunc = !cimg::strcmp("translation",displacement_function);
+    bool plasmaFunc = !cimg::strcmp("plasma",displacement_function);
+    CImg<> plasma;
+
+    if (plasmaFunc)
     {
-      CImg<> plasma;
       create_plasma(plasma,option_image_width,option_image_height,-displacement_constant_x,displacement_constant_x,displacement_constant_y);
-      displacement_map(particles,displacement_type,plasma);
+    }
+
+    if(displacement_type==1)
+    {
+      cerr<<"information: double exposure generation.\n"<<flush;
+      CImg<float> particles2(particles);
+      if (transFunc)
+      {
+        displacement_translation(particles,-0.5f,displacement_constant_x,displacement_constant_y);
+        displacement_translation(particles2,0.5f,displacement_constant_x,displacement_constant_y);
+      }
+      if (plasmaFunc)
+      {
+        displacement_map(particles,-0.5f,plasma);
+        displacement_map(particles2,0.5f,plasma);
+      }
+      particles.append(particles2,'x');
+    }
+    else
+    {
+      cerr<<"information: single exposure generation.\n"<<flush;
+      if (transFunc)
+      {
+        displacement_translation(particles,displacement_type,displacement_constant_x,displacement_constant_y);
+      }
+      if (plasmaFunc)
+      {
+        displacement_map(particles,displacement_type,plasma);
+      }
+    }
+
+    if (strlen(field_file) > 0)
+    {
+      CImg<float> field;
+
+      if (transFunc)
+      {
+        // Set field image size and initialize all pixels to 0;
+        field.assign(option_image_width * 0.01 * field_resolution, option_image_height * 0.01 * field_resolution, 1, 3, 0);
+        // Set all X and Y velocities
+        cimg_forXY(field, x, y)
+        {
+          field(x, y, 0, 0) = displacement_constant_x;
+          field(x, y, 0, 1) = displacement_constant_y;
+        }
+      }
+      if (plasmaFunc)
+      {
+        // Make a downscaled copy of the plasma map using bicubic interpolation
+        plasma.get_resize(-field_resolution, -field_resolution, -100, -100, 5).transfer_to(field);
+      }
+
+      cerr<<"information: saving velocity field to " << field_file << "\n";
+      field.save(field_file);
     }
   }
 //set particle parameters (ouput)
